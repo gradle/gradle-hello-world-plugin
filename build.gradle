@@ -1,0 +1,85 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:0.3"
+    }
+}
+
+apply plugin: "java"
+apply plugin: "idea"
+apply plugin: "bintray"
+apply plugin: "maven-publish"
+
+group = 'org.gradle'
+version = '0.2'
+
+dependencies {
+    compile gradleApi()
+}
+
+repositories {
+    jcenter()
+}
+
+sourceCompatibility = 1.6
+targetCompatibility = 1.6
+
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+def pomConfig = {
+    licenses {
+        license {
+            name "The Apache Software License, Version 2.0"
+            url "http://www.apache.org/licenses/LICENSE-2.0.txt"
+            distribution "repo"
+        }
+    }
+    developers {
+        developer {
+            id "gradleware"
+            name "Team Gradleware"
+            email "info@gradleware.com"
+        }
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+
+            pom.withXml {
+                def root = asNode()
+                root.appendNode('description', 'A simple “Hello World” Gradle plugin')
+                root.children().last() + pomConfig
+            }
+        }
+    }
+}
+
+bintray {
+    user = bintrayUser
+    key = bintrayKey
+    publications = ['mavenJava']
+    pkg {
+        userOrg = 'gradle'
+        repo = 'gradle-plugins'
+        name = 'gradle-hello-world-plugin'
+        desc = "The “Hello World” of Gradle plugins. Adds a task named ‘helloWorld’ that, you guessed it, prints “Hello world!”"
+        licenses = ['Apache-2.0']
+        labels = ["publish"]
+    }
+}
+
