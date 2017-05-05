@@ -3,13 +3,13 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:0.3"
+        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3"
     }
 }
 
 apply plugin: "java"
 apply plugin: "idea"
-apply plugin: "bintray"
+apply plugin: "com.jfrog.bintray"
 apply plugin: "maven-publish"
 
 group = 'org.gradle'
@@ -23,8 +23,8 @@ repositories {
     jcenter()
 }
 
-sourceCompatibility = 1.6
-targetCompatibility = 1.6
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 task javadocJar(type: Jar) {
     classifier = 'javadoc'
@@ -70,8 +70,8 @@ publishing {
 }
 
 bintray {
-    user = bintrayUser
-    key = bintrayKey
+    user = hasProperty('bintray_user') ? bintray_user : ''
+    key = hasProperty('bintray_api_key') ? bintray_api_key : ''
     publications = ['mavenJava']
     pkg {
         userOrg = 'gradle'
@@ -82,4 +82,6 @@ bintray {
         labels = ["publish"]
     }
 }
+
+
 
